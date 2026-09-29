@@ -1,0 +1,188 @@
+﻿@page
+@model IndexModel
+
+<div class="form-container">
+    <h1>Анкета студента</h1>
+    <p class="description">Введите свои данные</p>
+
+
+<form id="studentForm" method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        <label>Имя-фамилия:</label>
+        <input type="text" name="Name" placeholder="Введите имя" required>
+    </div>
+
+    <div class="form-group">
+        <label>Номер телефона:</label>
+        <input type="tel" name="Phone" placeholder="+7" required>
+    </div>
+
+    <div class="form-group">
+        <label>Email:</label>
+        <input type="email" name="Email" placeholder="email@example.com" required>
+    </div>
+
+    <div class="form-group">
+        <label>Специальность:</label>
+        <div class="speciality">
+            <input type="radio" name="Speciality" value="Программирование" id="dev" required>
+            <label for="dev">Программирование</label><br>
+            <input type="radio" name="Speciality" value="Дизайн" id="design">
+            <label for="design">Дизайн</label><br>
+            <input type="radio" name="Speciality" value="Маркетинг" id="marketing">
+            <label for="marketing">Маркетинг</label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="courses">Курс:</label>
+        <select name="Course" id="courses">
+            <option value="1 курс">1 курс</option>
+            <option value="2 курс">2 курс</option>
+            <option value="3 курс">3 курс</option>
+            <option value="4 курс">4 курс</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Дата рождения:</label>
+        <input type="date" name="BirthDate" required>
+    </div>
+
+    <div class="form-group">
+        <label>Технологии:</label>
+        <div class="speciality">
+            <input type="checkbox" name="Technologies" value="HTML/CSS" id="html">
+            <label for="html">HTML/CSS</label><br>
+            <input type="checkbox" name="Technologies" value="JavaScript" id="js">
+            <label for="js">JavaScript</label><br>
+            <input type="checkbox" name="Technologies" value="C#" id="csharp">
+            <label for="csharp">C#</label><br>
+            <input type="checkbox" name="Technologies" value="Python" id="python">
+            <label for="python">Python</label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="city">Город:</label>
+        <select name="City" id="city" required>
+            <option value="Москва">Москва</option>
+            <option value="Санкт-Петербург">Санкт-Петербург</option>
+            <option value="Сочи">Сочи</option>
+            <option value="Казань">Казань</option>
+            <option value="Новосибирск">Новосибирск</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="language">Основной язык программирования:</label>
+        <select name="ProgrammingLanguage" id="language" required>
+            <option value="C#">C#</option>
+            <option value="JavaScript">JavaScript</option>
+            <option value="Python">Python</option>
+            <option value="C++">C++</option>
+            <option value="Java">Java</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Формат обучения:</label>
+        <div class="speciality">
+            <input type="radio" name="EducationFormat" value="Очно" id="fulltime" required>
+            <label for="fulltime">Очно</label><br>
+            <input type="radio" name="EducationFormat" value="Заочно" id="parttime">
+            <label for="parttime">Заочно</label><br>
+            <input type="radio" name="EducationFormat" value="Дистанционно" id="remote">
+            <label for="remote">Дистанционно</label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="about">Информация о себе:</label>
+        <textarea name="About" id="about" rows="5"
+                  placeholder="Расскажите немного о себе" required></textarea>
+    </div>
+
+    <button class="form-button" type="submit">Отправить</button>
+</form>
+
+<div id="result" class="student-card" style="display: none;">
+    <div class="student-card-header">
+        <h2>Анкета отправлена</h2>
+        <p>Данные студента</p>
+    </div>
+
+    <div class="student-info">
+        <div class="info-item"><span>Имя</span><strong id="result-name"></strong></div>
+        <div class="info-item"><span>Телефон</span><strong id="result-phone"></strong></div>
+        <div class="info-item"><span>Email</span><strong id="result-email"></strong></div>
+        <div class="info-item"><span>Специальность</span><strong id="result-speciality"></strong></div>
+        <div class="info-item"><span>Курс</span><strong id="result-course"></strong></div>
+        <div class="info-item"><span>Дата рождения</span><strong id="result-birthdate"></strong></div>
+        <div class="info-item"><span>Технологии</span><strong id="result-technologies"></strong></div>
+        <div class="info-item"><span>Город</span><strong id="result-city"></strong></div>
+        <div class="info-item"><span>Язык программирования</span><strong id="result-language"></strong></div>
+        <div class="info-item"><span>Формат обучения</span><strong id="result-format"></strong></div>
+        <div class="info-item"><span>О себе</span><strong id="result-about"></strong></div>
+    </div>
+</div>
+
+</div>
+
+<script>
+    const form = document.querySelector("#studentForm");
+
+    form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const button = form.querySelector("button");
+        button.textContent = "Отправка...";
+        button.disabled = true;
+
+        try {
+            const response = await fetch("", {
+                method: "POST",
+                body: new FormData(form)
+            });
+
+            if (!response.ok) {
+                throw new Error("Ошибка сервера: " + response.status);
+            }
+
+            const data = await response.json();
+
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
+            document.querySelector("#result-name").textContent = data.name || "";
+            document.querySelector("#result-phone").textContent = data.phone || "";
+            document.querySelector("#result-email").textContent = data.email || "";
+            document.querySelector("#result-speciality").textContent = data.speciality || "";
+            document.querySelector("#result-course").textContent = data.course || "";
+            document.querySelector("#result-birthdate").textContent = data.birthDate || "";
+
+            document.querySelector("#result-technologies").textContent =
+                Array.isArray(data.technologies)
+                    ? data.technologies.join(", ")
+                    : data.technologies || "Не выбраны";
+
+            document.querySelector("#result-city").textContent = data.city || "";
+            document.querySelector("#result-language").textContent =
+                data.programmingLanguage || "";
+            document.querySelector("#result-format").textContent =
+                data.educationFormat || "";
+            document.querySelector("#result-about").textContent = data.about || "";
+
+            document.querySelector("#result").style.display = "block";
+
+            button.disabled = false;
+            button.textContent = "Анкета успешно отправлена";
+        } catch (error) {
+            console.error(error);
+            alert("Ошибка при отправке анкеты");
+            button.disabled = false;
+            button.textContent = "Отправить";
+        }
+    });
+</script>
